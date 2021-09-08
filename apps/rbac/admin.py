@@ -73,3 +73,11 @@ class UserProfileAdmin(ImportExportModelAdmin):
     get_roles_name.short_description = "所属角色"
     # 指定排序字段,多数的函数没有排序的需求,加上比较好看(选择合适字段保持排序一直)
     get_roles_name.admin_order_field = "name"
+
+
+@admin.register(models.WorkorderRole)
+class WorkorderRoleAdmin(ImportExportModelAdmin):
+    resource_class = WorkorderRoleResource
+    list_display = ['id', 'name']
+    # list_display = '__all__'
+    list_per_page = 100

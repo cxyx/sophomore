@@ -40,3 +40,11 @@ class UserProfileResource(resources.ModelResource):
         skip_unchanged = True
         report_skipped = False
         import_id_fields = ['name', 'mobile', 'email', 'image', 'department', 'position', 'superior', 'roles']
+
+
+class WorkorderRoleResource(resources.ModelResource):
+    class Meta:
+        model = WorkorderRole
+        skip_unchanged = True
+        report_skipped = False
+        import_id_fields = ['name', 'desc']

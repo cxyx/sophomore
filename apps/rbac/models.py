@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 import os
 import uuid
 
+
 class Menu(models.Model):
     """
     菜单
@@ -42,23 +43,23 @@ class Permission(models.Model):
         ordering = ['id']
 
 
-class NewPermission(models.Model):
-    """
-    权限
-    """
-    name = models.CharField(max_length=30, unique=True, verbose_name="权限名")
-    method = models.CharField(max_length=50, null=True, blank=True, verbose_name="方法")
-    menu = models.ForeignKey("Menu", null=False, blank=False, on_delete=models.SET_NULL, verbose_name="菜单")
-
-    # pid = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, verbose_name="父权限")
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = '权限'
-        verbose_name_plural = verbose_name
-        ordering = ['id']
+# class NewPermission(models.Model):
+#     """
+#     权限
+#     """
+#     name = models.CharField(max_length=30, unique=True, verbose_name="权限名")
+#     method = models.CharField(max_length=50, null=True, blank=True, verbose_name="方法")
+#     menu = models.ForeignKey("Menu", null=False, blank=False, on_delete=models.SET_NULL, verbose_name="菜单")
+#
+#     # pid = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, verbose_name="父权限")
+#
+#     def __str__(self):
+#         return self.name
+#
+#     class Meta:
+#         verbose_name = '权限'
+#         verbose_name_plural = verbose_name
+#         ordering = ['id']
 
 
 class Role(models.Model):
@@ -98,6 +99,10 @@ class Organization(models.Model):
         return self.name
 
 
+class WorkorderRole(models.Model):
+    name = models.CharField(max_length=20, default="", verbose_name="工单角色名")
+    desc = models.CharField(max_length=20, default="", verbose_name="描述")
+
 class UserProfile(AbstractUser):
     '''
     用户
@@ -111,6 +116,7 @@ class UserProfile(AbstractUser):
     position = models.CharField(max_length=50, null=True, blank=True, verbose_name="职位")
     superior = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, verbose_name="上级主管")
     roles = models.ManyToManyField("Role", verbose_name="角色", blank=True)
+    workorder_role = models.ManyToManyField("WorkorderRole", verbose_name="工单角色", blank=True)
 
     class Meta:
         verbose_name = "用户信息"
@@ -119,3 +125,5 @@ class UserProfile(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
