@@ -57,6 +57,14 @@ class WorkOrder(models.Model):
 
     # receiver = models.ForeignKey('User',related_name='receiver',blank=True, null=True,on_delete=models.SET_NULL,verbose_name='接单人')
 
+    class Meta:
+        verbose_name = "工单信息"
+        verbose_name_plural = verbose_name
+        ordering = ['number']
+
+    def __str__(self):
+        return self.number
+
     @property
     def get_menus(self):
         def get_menu_config_dict():

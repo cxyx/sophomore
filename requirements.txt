@@ -8,7 +8,15 @@ django-filter~=2.4.0
 PyMySQL~=1.0.2
 Pillow
 
+# admin 优化
 django-widget-tweaks
 django_filters
 django_tables2
 django-simpleui
+
+# celery 相关
+celery
+django-celery-beat
+django-celery-results
+
+django-redis

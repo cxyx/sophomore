@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
-
 class PersonalConfig(AppConfig):
-    name = 'apps.personal'
+    name = 'personal'
+    verbose_name = '我的工作台'
