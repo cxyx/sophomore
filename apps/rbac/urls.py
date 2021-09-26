@@ -23,9 +23,8 @@ urlpatterns = [
     path(r'api/permission/tree/', permission.PermissionTreeView.as_view(), name='permissions_tree'),
     path(r'api/user/list/', user.UserListView.as_view(), name='user_list'),
 
-    path('test_celery/',views.test_celery)
+    path('test_celery/',views.test_celery),
 
-
-
+    path('dashboard/', views.MenuListView.as_view({'get': 'list'}))
 
 ]

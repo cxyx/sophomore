@@ -23,7 +23,6 @@ class WorkOrder(models.Model):
         ('3', '故障处理'),
         ('4', '服务请求'),
     )
-
     status_choices = (
         ('1', '待提交'),
         ('2', '待审核'),

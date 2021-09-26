@@ -28,6 +28,7 @@ app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 # 下面的任务执行条件有一下几点
 # 1. 启动 django
 # 2. celery -A $project_name -B -l info
+# app.conf.celery_import
 app.conf.beat_schedule = {
     # 定时执行,15:36 执行
     'sync_admin_daily': {

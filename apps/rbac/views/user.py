@@ -15,7 +15,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.settings import api_settings
-
+from icecream import ic
 from apps.rbac.utils.code import *
 from apps.rbac.utils.custom import CommonPagination, RbacPermission
 from ..models import UserProfile, Menu
@@ -35,7 +35,12 @@ class UserAuthView(APIView):
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')
+
+        ic(username,password)
+
+
         user = authenticate(username=username, password=password)
+
         if user:
             payload = jwt_payload_handler(user)
             return Response({'token': jwt.encode(payload, settings.SECRET_KEY)})

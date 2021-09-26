@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_apscheduler',
+
+    'django_crontab',
     'django_celery_results',
     'django_celery_beat',
-    
     'widget_tweaks',  #
     'django_filters',  # 自定义过滤字段
     'django_tables2',  # 自定义表格显示字段
@@ -149,6 +151,7 @@ AUTH_USER_MODEL = 'rbac.UserProfile'
 
 SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ANALYSIS = False
+SIMPLEUI_DEFAULT_THEME = 'admin.lte.css'
 
 # SIMPLEUI_CONFIG = {
 #     # 是否使用系统默认菜单，自定义菜单时建议关闭。
@@ -241,3 +244,17 @@ CELERY_RESULT_EXPIRES = 0
 # CELERY_WORKER_MAX_TASKS_PER_CHILD = 200
 
 # DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+'''
+*    *    *    *    * ：分别表示 分(0-59)、时(0-23)、天(1 - 31)、月(1 - 12) 、周(星期中星期几 (0 - 7) (0 7 均为周天))
+crontab范例：
+每五分钟执行    */5 * * * *
+每小时执行     0 * * * *
+每天执行       0 0 * * *
+每周一执行       0 0 * * 1
+每月执行       0 0 1 * *
+每天23点执行   0 23 * * *
+'''
+CRONJOBS = [
+    ('*/1 * * * *', 'personal.crontabs.confdict_handle', ' >> /tmp/logs/confdict_handle.log'), # 注意：/tmp/base_api 目录要手动创建
+]

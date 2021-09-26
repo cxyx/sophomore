@@ -15,8 +15,11 @@ django_tables2
 django-simpleui
 
 # celery 相关
-celery
+celery~=5.1.2
 django-celery-beat
 django-celery-results
 
 django-redis
+icecream~=2.1.1
+simpleui~=4.0.2
+APScheduler~=3.7.0

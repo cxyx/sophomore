@@ -11,7 +11,6 @@ from . import models
 @admin.register(models.Menu)
 class MenuAdmin(ImportExportModelAdmin):
     # 没有显示为空
-
     resource_class = MenuResource
     list_display = ('name', 'icon',  'is_frame', 'path','is_show', 'sort', 'component', 'pid')
     search_fields = ['name', 'icon', 'path', 'is_frame', ]
