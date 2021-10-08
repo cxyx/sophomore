@@ -1,10 +1,18 @@
-from django.shortcuts import render
-
+from django.shortcuts import render, get_object_or_404, get_list_or_404  # todo:get_list_or_404
+from django.contrib.auth import get_user_model
 # Create your views here.
-
-from apscheduler.schedulers.background import BackgroundScheduler # 使用它可以使你的定时任务在后台运行
+from rest_framework.views import APIView
+from sophomore.loggers import l_logger
+User = get_user_model()
+from .menu_config import get_menu_list
+from .models import *
+from apscheduler.schedulers.background import BackgroundScheduler  # 使用它可以使你的定时任务在后台运行
 from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
 import time
+from functools import wraps
+
+logger = l_logger('personal')
+
 '''
 date：在您希望在某个特定时间仅运行一次作业时使用
 interval：当您要以固定的时间间隔运行作业时使用
@@ -12,6 +20,7 @@ cron：以crontab的方式运行定时任务
 minutes：设置以分钟为单位的定时器
 seconds：设置以秒为单位的定时器
 '''
+
 
 # try:
 #     scheduler = BackgroundScheduler()
@@ -30,3 +39,14 @@ seconds：设置以秒为单位的定时器
 #     scheduler.start()
 # except Exception as e:
 #     print('定时任务异常：%s' % str(e))
+
+
+class WorkOrderView(APIView):
+    permission_classes = ()
+
+    def get(self, request, type):
+        work_order = get_object_or_404(WorkOrder, pk=request.GET('id'))
+        type, status = work_order.type, work_order.status
+        memus = get_menu_list(request, work_order,type, status)
+
+        return ''

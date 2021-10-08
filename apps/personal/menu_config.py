@@ -13,8 +13,6 @@
     rm_data_finish    : (脱敏)完成
     comment           : 评论
     back              : 退回
-
-
 """
 """
 
@@ -30,8 +28,21 @@
 ==>脱敏中:脱敏人点击(脱敏)完成按钮(发送给审核人)==>脱敏完成:点击完成
 
 """
-menu = {
-    # 环境新建
+'''
+此处配置参考models 写
+'''
+
+# from django.contrib.auth import get_user_model
+from icecream import ic
+
+# User = get_user_model()
+menus_conf = {
+    """
+    "工单类型":{
+        "工单状态":{"按钮"}
+    },
+    """
+
     "1": {
         # 示例 : 工单类型为"环境搭建"(type=1),在"工单状态"为"提交状态"的处理人能看到的"菜单"为["提交","编辑","评论"]
         "1": ["submit", "edit", "comment"],
@@ -64,34 +75,22 @@ menu = {
     }
 }
 
-menus = {
-    "1": {
-        "1": ["submit", "edit", "commit"],
-        "2": ["approve", "finish", "commit"],
-        "3": ["submit", "approve", "final_approve", "commit"],
-        "4": ["submit", "approve", "final_approve", "commit"],
-        "5": ["submit", "approve", "final_approve", "commit"],
-        "6": ["submit", "approve", "final_approve", "commit"],
-        "7": ["close", "commit"]
-    },
-    "2": {
-        "1": ["submit", "edit", "commit"],
-        "2": ["approve", "finish", "commit"],
-        "3": ["submit", "approve", "final_approve", "commit"],
-        "7": ["close", "commit"]
-    },
-    "3": {
-        "1": ["submit", "edit", "commit"],
-        "2": ["approve", "finish", "commit"],
-        "3": ["submit", "approve", "final_approve", "commit"],
-        "7": ["close", "commit"]
-    },
-    "4": {
-        "1": ["submit", "edit", "commit"],
-        "2": ["approve", "finish", "commit"],
-        "3": ["submit", "approve", "final_approve", "commit"],
-        "7": ["close", "commit"]
-    }
-}
 
-# def get_menu(workorder_type,status):
+def get_menu_list(request, work_order, type: str, status: str) -> list:
+    """
+    获取用户用户工单详情页具有的按钮权限列表
+
+    :param request:
+    :param work_order: 工单实例对象
+    :param type:       查询工单类型
+    :param status:     查询工单状态
+    :return:           按钮列表
+    """
+    return menus_conf.get(type, {}).get(status, []) if request.user == work_order.todoer else []
+
+
+# if __name__ == '__main__':
+    # ic(get_menu_list('4', '3'))
+    # pass
+
+
