@@ -11,7 +11,7 @@ def test():
 
 @shared_task
 def add():
-    x, y = 1,2
+    x, y = 1, 2
     with open('text.txt', mode='a', encoding="utf-8") as f:
         f.write(f'当前时间:{time.time()}')
 
@@ -27,6 +27,7 @@ def auto_aync_adpm():
     with open('text2.txt', mode='a', encoding="utf-8") as f:
         f.write(f'当前时间:{time.time()}')
 
+
 @app.task(name='auto_aync_adpm1')
 def auto_aync_adpm1():
     print('auto_aync_adpm1')
@@ -34,9 +35,8 @@ def auto_aync_adpm1():
     with open('text2.txt', mode='a', encoding="utf-8") as f:
         f.write(f'当前时间:{time.time()}')
 
+
 @app.task(name='auto_aync_adpm2')
 def auto_aync_adpm2():
-
     with open('text2.txt', mode='a', encoding="utf-8") as f:
         f.write(f'当前时间:{time.time()}')
-

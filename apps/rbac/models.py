@@ -91,15 +91,16 @@ class Organization(models.Model):
 
 
 class WorkorderRole(models.Model):
-    name = models.CharField(max_length=20, default="", verbose_name="工单角色名")
-    desc = models.CharField(max_length=20, default="", verbose_name="描述")
+    name = models.CharField(max_length=32, unique=True, verbose_name="权限名")
+    name_zh = models.CharField(max_length=50, null=True, blank=True, verbose_name="中文权限名")
 
     class Meta:
         verbose_name = "工单角色"
         verbose_name_plural = verbose_name
+        ordering = ["id"]
 
     def __str__(self):
-        return self.name
+        return self.name_zh
 
 
 class UserProfile(AbstractUser):
@@ -115,7 +116,9 @@ class UserProfile(AbstractUser):
     position = models.CharField(max_length=50, null=True, blank=True, verbose_name="职位")
     superior = models.ForeignKey("self", null=True, blank=True, on_delete=models.SET_NULL, verbose_name="上级主管")
     roles = models.ManyToManyField("Role", verbose_name="角色", blank=True)
-    workorder_role = models.ManyToManyField("WorkorderRole", verbose_name="工单角色", blank=True)
+    workorder_role = models.ForeignKey("WorkorderRole", verbose_name="工单角色", null=True, blank=True,
+                                       on_delete=models.SET_NULL)
+    is_linkman = models.BooleanField(default=True, verbose_name="是否接口人")
 
     class Meta:
         verbose_name = "用户信息"
