@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import user, organization, menu, role, permission
+from .views import user, organization, menu, role, permission,views
 # from cmdb.views import dict
 from rest_framework import routers
 
@@ -22,4 +22,9 @@ urlpatterns = [
     path(r'api/menu/tree/', menu.MenuTreeView.as_view(), name='menus_tree'),
     path(r'api/permission/tree/', permission.PermissionTreeView.as_view(), name='permissions_tree'),
     path(r'api/user/list/', user.UserListView.as_view(), name='user_list'),
+
+    path('test_celery/',views.test_celery),
+
+    path('dashboard/', views.MenuListView.as_view({'get': 'list'}))
+
 ]

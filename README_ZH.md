@@ -42,3 +42,8 @@
 
 
 # 用户->多角色->多权限
+
+```
+celery -A sophomore beat  -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+celery -A sophomore worker -B  -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+```

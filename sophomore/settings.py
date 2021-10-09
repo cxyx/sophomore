@@ -25,7 +25,7 @@ SECRET_KEY = 'ck-a5-ri3m_s!2t-#6(%u^qe-%o)*q)7ypdb(1zqvw&xt2$ew3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -38,15 +38,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_apscheduler',
+
+    'django_crontab',
+    'django_celery_results',
+    'django_celery_beat',
+    'widget_tweaks',  #
+    'django_filters',  # 自定义过滤字段
+    'django_tables2',  # 自定义表格显示字段
+    'import_export',
+    'rest_auth',
+    'rest_framework',
+    'rest_framework.authtoken',
+
     'personal',
     'operation',
     'rbac',
     'assets',
 
-    'widget_tweaks',  #
-    'django_filters',  # 自定义过滤字段
-    'django_tables2',  # 自定义表格显示字段
-    'import_export'
 ]
 
 MIDDLEWARE = [
@@ -64,8 +73,7 @@ ROOT_URLCONF = 'sophomore.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'zh-hans'
 
-USE_TZ = True  # 默认值True。
+# USE_TZ = True  # 默认值True。
 TIME_ZONE = 'Asia/Shanghai'  # 设置时区
 USE_I18N = True  # 默认为True，是否启用自动翻译系统
 USE_L10N = True  # 默认False，以本地化格式显示数字和时间
@@ -140,7 +148,29 @@ AUTH_USER_MODEL = 'rbac.UserProfile'
 
 SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ANALYSIS = False
+SIMPLEUI_DEFAULT_THEME = 'admin.lte.css'
 
+# drf全局配置
+REST_framework = {
+    # 权限
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # 全部判断是否登录
+        # 'rest_framework.permissions.IsAuthenticated',  # 全部判断是否登录
+    ],
+    # 认证
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'restframework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',  # 需要在installed_app里添加配置
+    ],
+}
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+# AUTHENTICATION_BACKENDS = (
+#     'rest_framework.authentication.TokenAuthentication',
+#     'django.contrib.auth.backends.ModelBackend',
+# )
 # SIMPLEUI_CONFIG = {
 #     # 是否使用系统默认菜单，自定义菜单时建议关闭。
 #     'system_keep': False,
@@ -184,3 +214,66 @@ SIMPLEUI_ANALYSIS = False
 #         },
 #     ]
 # }
+
+
+# ============celery 周期性任务相关配置================
+DJANGO_CELERY_BEAT_TZ_AWARE = False
+CELERY_ENABLE_UTC = False
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'  # 使用django_celery_beat插件用来动态配置任务！
+CELERY_TIMEZONE = TIME_ZONE
+
+# 最重要的配置，设置消息broker,格式为：db://user:password@host:port/dbname
+# 如果redis安装在本机，使用localhost
+# 如果docker部署的redis，使用redis://redis:6379
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+
+# 有些情况下可以防止死锁
+CELERYD_FORCE_EXECV = True
+
+# celery时区设置，建议与Django settings中TIME_ZONE同样时区，防止时差
+
+# 其它Celery常用配置选项包括：
+
+# 为django_celery_results存储Celery任务执行结果设置后台
+# 格式为：db+scheme://user:password@host:port/dbname
+# 支持数据库django-db和缓存django-cache存储任务状态及结果
+CELERY_RESULT_BACKEND = "django-db"
+# 处理结果存储在redis 库中
+# CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/1"
+# celery内容等消息的格式设置，默认json
+CELERY_ACCEPT_CONTENT = ['application/json', ]
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# 为任务设置超时时间，单位秒。超时即中止，执行下个任务。
+CELERY_TASK_TIME_LIMIT = 60
+
+# 为存储结果设置过期日期，默认1天过期。如果beat开启，Celery每天会自动清除。
+# 设为0，存储结果永不过期
+CELERY_RESULT_EXPIRES = 0
+
+# 任务限流
+# CELERY_TASK_ANNOTATIONS = {'tasks.add': {'rate_limit': '10/s'}}
+
+# Worker并发数量，一般默认CPU核数，可以不设置
+# CELERY_WORKER_CONCURRENCY = 2
+
+# 每个worker执行了多少任务就会死掉，默认是无限的
+# CELERY_WORKER_MAX_TASKS_PER_CHILD = 200
+
+# DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+'''
+*    *    *    *    * ：分别表示 分(0-59)、时(0-23)、天(1 - 31)、月(1 - 12) 、周(星期中星期几 (0 - 7) (0 7 均为周天))
+crontab范例：
+每五分钟执行    */5 * * * *
+每小时执行     0 * * * *
+每天执行       0 0 * * *
+每周一执行       0 0 * * 1
+每月执行       0 0 1 * *
+每天23点执行   0 23 * * *
+'''
+CRONJOBS = [
+    ('*/1 * * * *', 'personal.crontabs.confdict_handle', ' >> /tmp/logs/confdict_handle.log'),
+    # 注意：/tmp/base_api 目录要手动创建
+]

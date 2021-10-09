@@ -8,8 +8,13 @@ class MenuSerializer(serializers.ModelSerializer):
     '''
     菜单序列化
     '''
+    # ppid = serializers.SerializerMethodField('parent_id', read_only=True)
 
     class Meta:
         model = Menu
         fields = ('id', 'name', 'icon', 'path', 'is_show','is_frame', 'sort', 'component', 'pid')
         extra_kwargs = {'name': {'required': True, 'error_messages': {'required': '必须填写菜单名'}}}
+
+
+
+

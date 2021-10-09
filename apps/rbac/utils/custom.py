@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework.views import exception_handler
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
+from icecream import ic
+ic.configureOutput(includeContext=True)
 error_logger = logging.getLogger('error')
 info_logger = logging.getLogger('info')
 
@@ -104,25 +106,32 @@ class TreeAPIView(ListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(queryset, many=True)
+
         tree_dict = {}
         tree_data = []
+
         try:
             for item in serializer.data:
                 tree_dict[item['id']] = item
+
             for i in tree_dict:
-                if tree_dict[i]['pid']:
-                    pid = tree_dict[i]['pid']
+                pid = tree_dict[i]['pid']
+                if pid:
                     parent = tree_dict[pid]
-                    parent.setdefault('children', []).append(tree_dict[i])
+                    parent.setdefault('children',[]).append(tree_dict[i])
                 else:
                     tree_data.append(tree_dict[i])
+
             results = tree_data
+
         except KeyError:
             results = serializer.data
         if page is not None:
             return self.get_paginated_response(results)
 
         print(f'TreeAPIView_results:{results}')
+        import json
+        ic(json.dumps(results))
         return Response(results)
 
 
