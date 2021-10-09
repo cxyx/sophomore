@@ -47,16 +47,14 @@ INSTALLED_APPS = [
     'django_filters',  # 自定义过滤字段
     'django_tables2',  # 自定义表格显示字段
     'import_export',
-
+    'rest_auth',
     'rest_framework',
-    
+    'rest_framework.authtoken',
+
     'personal',
     'operation',
     'rbac',
     'assets',
-
-
-
 
 ]
 
@@ -75,8 +73,7 @@ ROOT_URLCONF = 'sophomore.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -153,6 +150,27 @@ SIMPLEUI_HOME_INFO = False
 SIMPLEUI_ANALYSIS = False
 SIMPLEUI_DEFAULT_THEME = 'admin.lte.css'
 
+# drf全局配置
+REST_framework = {
+    # 权限
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # 全部判断是否登录
+        # 'rest_framework.permissions.IsAuthenticated',  # 全部判断是否登录
+    ],
+    # 认证
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'restframework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',  # 需要在installed_app里添加配置
+    ],
+}
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+# AUTHENTICATION_BACKENDS = (
+#     'rest_framework.authentication.TokenAuthentication',
+#     'django.contrib.auth.backends.ModelBackend',
+# )
 # SIMPLEUI_CONFIG = {
 #     # 是否使用系统默认菜单，自定义菜单时建议关闭。
 #     'system_keep': False,
@@ -201,7 +219,7 @@ SIMPLEUI_DEFAULT_THEME = 'admin.lte.css'
 # ============celery 周期性任务相关配置================
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 CELERY_ENABLE_UTC = False
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler' # 使用django_celery_beat插件用来动态配置任务！
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'  # 使用django_celery_beat插件用来动态配置任务！
 CELERY_TIMEZONE = TIME_ZONE
 
 # 最重要的配置，设置消息broker,格式为：db://user:password@host:port/dbname
@@ -256,5 +274,6 @@ crontab范例：
 每天23点执行   0 23 * * *
 '''
 CRONJOBS = [
-    ('*/1 * * * *', 'personal.crontabs.confdict_handle', ' >> /tmp/logs/confdict_handle.log'), # 注意：/tmp/base_api 目录要手动创建
+    ('*/1 * * * *', 'personal.crontabs.confdict_handle', ' >> /tmp/logs/confdict_handle.log'),
+    # 注意：/tmp/base_api 目录要手动创建
 ]

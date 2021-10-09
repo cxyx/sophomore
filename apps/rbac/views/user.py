@@ -65,6 +65,7 @@ class UserInfoView(APIView):
             return None
 
     def get(self, request):
+        ic(request.user)
         if request.user.id is not None:
             perms = self.get_permission_from_role(request)
             data = {

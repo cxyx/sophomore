@@ -15,7 +15,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from ..models import Menu
-
+from apps.common.custom import RbacPermission
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -34,7 +34,7 @@ class MenuListView(ModelViewSet):
     filter_fields = ('name',)
     ordering_fields = ('id',)
     authentication_classes = (JSONWebTokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (RbacPermission,)  # 是否有权限访问
     # filter_fields = ['']
     # search_fields = ['']
     # 部分网址用
