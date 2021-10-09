@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 # Create your views here.
-# app/views.py
+# app/views1.py
 from ..tasks import add
 from ..serializers.menu_serializer import *
 from ..serializers.organization_serializer import *
@@ -9,6 +9,8 @@ from ..serializers.permission_serializer import *
 from ..serializers.role_serializer import *
 from ..serializers.user_serializer import *
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -39,4 +41,29 @@ class MenuListView(ModelViewSet):
     # search_fields = ['']
     # 部分网址用
 
+
+
+class ProductViewSet(APIView):
+    def get(self, request, format=None):
+
+        return Response({
+            'test':'ProductViewSet',
+            'name':'ProductViewSet',
+        })
+
+class ImageViewSet(APIView):
+    def get(self, request, format=None):
+
+        return Response({
+            'test':'ImageViewSet',
+            'name':'ImageViewSet',
+        })
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import AllowAny
+from ..serializers.jwt_serializers import MyTokenObtainPairSerializer
+
+class MyObtainTokenPairView(TokenObtainPairView):
+    permission_classes = (AllowAny,)
+    serializer_class = MyTokenObtainPairSerializer
 

@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os, sys
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -51,10 +51,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    'personal',
-    'operation',
-    'rbac',
-    'assets',
+    'apps.personal',
+    'apps.operation',
+    'apps.rbac',
+    'apps.assets'
 
 ]
 
@@ -159,121 +159,46 @@ REST_framework = {
     ],
     # 认证
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'restframework.authentication.BasicAuthentication',
-        'rest_framework.authentication.TokenAuthentication',  # 需要在installed_app里添加配置
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
-from rest_framework.authentication import BasicAuthentication
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
 
-# AUTHENTICATION_BACKENDS = (
-#     'rest_framework.authentication.TokenAuthentication',
-#     'django.contrib.auth.backends.ModelBackend',
-# )
-# SIMPLEUI_CONFIG = {
-#     # 是否使用系统默认菜单，自定义菜单时建议关闭。
-#     'system_keep': False,
-#
-#     # 用于菜单排序和过滤, 不填此字段为默认排序和全部显示。空列表[] 为全部不显示.
-#     'menu_display': ['任务管理', '权限管理'],
-#
-#     # 设置是否开启动态菜单, 默认为False. 如果开启, 则会在每次用户登陆时刷新展示菜单内容。
-#     # 一般建议关闭。
-#     'dynamic': False,
-#     'menus': [
-#         {
-#             'app': 'rbac',
-#             'name': '权限管理',
-#             'icon': 'fas fa-user-shield',
-#             'models': [
-#                 {
-#                     'name': '用户列表',
-#                     'icon': 'fa fa-user',
-#                     'url': 'rbac/user/'
-#                 },
-#                 {
-#                     'name': '用户组',
-#                     'icon': 'fa fa-th-list',
-#                     'url': 'rbac/group/'
-#                 }
-#             ]
-#         },
-#
-#         {
-#             'name': '任务管理',
-#             'icon': 'fa fa-th-list',
-#             'models': [
-#                 {
-#                     'name': '任务列表',
-#                     # 注意url按'/admin/应用名小写/模型名小写/'命名。
-#                     'url': '/admin/tasks/task/',
-#                     'icon': 'fa fa-tasks'
-#                 },
-#             ]
-#         },
-#     ]
-# }
+DEFAULTS = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
 
 
-# ============celery 周期性任务相关配置================
-DJANGO_CELERY_BEAT_TZ_AWARE = False
-CELERY_ENABLE_UTC = False
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'  # 使用django_celery_beat插件用来动态配置任务！
-CELERY_TIMEZONE = TIME_ZONE
+    'ALGORITHM': 'HS256',
+    # 'SIGNING_KEY': settings.SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
 
-# 最重要的配置，设置消息broker,格式为：db://user:password@host:port/dbname
-# 如果redis安装在本机，使用localhost
-# 如果docker部署的redis，使用redis://redis:6379
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
 
-# 有些情况下可以防止死锁
-CELERYD_FORCE_EXECV = True
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 
-# celery时区设置，建议与Django settings中TIME_ZONE同样时区，防止时差
 
-# 其它Celery常用配置选项包括：
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
 
-# 为django_celery_results存储Celery任务执行结果设置后台
-# 格式为：db+scheme://user:password@host:port/dbname
-# 支持数据库django-db和缓存django-cache存储任务状态及结果
-CELERY_RESULT_BACKEND = "django-db"
-# 处理结果存储在redis 库中
-# CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/1"
-# celery内容等消息的格式设置，默认json
-CELERY_ACCEPT_CONTENT = ['application/json', ]
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
 
-# 为任务设置超时时间，单位秒。超时即中止，执行下个任务。
-CELERY_TASK_TIME_LIMIT = 60
+    'JTI_CLAIM': 'jti',
 
-# 为存储结果设置过期日期，默认1天过期。如果beat开启，Celery每天会自动清除。
-# 设为0，存储结果永不过期
-CELERY_RESULT_EXPIRES = 0
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
 
-# 任务限流
-# CELERY_TASK_ANNOTATIONS = {'tasks.add': {'rate_limit': '10/s'}}
+SIMPLE_JWT = {
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
+    'ROTATE_REFRESH_TOKENS': True,
+}
 
-# Worker并发数量，一般默认CPU核数，可以不设置
-# CELERY_WORKER_CONCURRENCY = 2
 
-# 每个worker执行了多少任务就会死掉，默认是无限的
-# CELERY_WORKER_MAX_TASKS_PER_CHILD = 200
-
-# DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-'''
-*    *    *    *    * ：分别表示 分(0-59)、时(0-23)、天(1 - 31)、月(1 - 12) 、周(星期中星期几 (0 - 7) (0 7 均为周天))
-crontab范例：
-每五分钟执行    */5 * * * *
-每小时执行     0 * * * *
-每天执行       0 0 * * *
-每周一执行       0 0 * * 1
-每月执行       0 0 1 * *
-每天23点执行   0 23 * * *
-'''
-CRONJOBS = [
-    ('*/1 * * * *', 'personal.crontabs.confdict_handle', ' >> /tmp/logs/confdict_handle.log'),
-    # 注意：/tmp/base_api 目录要手动创建
-]
+AUTHENTICATION_BACKENDS = (
+    'rbac.views1.MyCustomBackend',
+)
